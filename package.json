@@ -1,0 +1,22 @@
+{
+  "name": "qualification",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hardhat.config.ts",
+  "scripts": {
+    "test": "hardhat test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DimensionDev/qualification.git"
+  },
+  "author": " <z308114274@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DimensionDev/qualification/issues"
+  },
+  "homepage": "https://github.com/DimensionDev/qualification#readme",
+  "dependencies": {
+    "@openzeppelin/contracts": "^4.1.0"
+  }
+}

@@ -1,0 +1,10 @@
+node_modules/
+build/
+coverage/
+coverage.json
+.coverage_artifacts
+.coverage_contracts
+
+#Hardhat files
+cache
+artifacts
