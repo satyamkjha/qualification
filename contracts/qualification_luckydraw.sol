@@ -117,7 +117,7 @@ contract QLF_LUCKYDRAW is IQLF {
             interfaceId == this.get_start_time.selector;
     }
 
-    function isLucky(address account) internal view returns (bool) {
+    function isLucky(address account) public view returns (bool) {
         if (lucky_factor == 0) {
             return true;
         }
