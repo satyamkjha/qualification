@@ -9,10 +9,9 @@
 pragma solidity >= 0.8.0;
 
 import "./IQLF.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract QLF_LUCKYDRAW is IQLF {
-    using SafeERC20 for IERC20;
 
     string private name;
     uint256 private creation_time;
@@ -29,6 +28,13 @@ contract QLF_LUCKYDRAW is IQLF {
     uint8 public lucky_factor;
     address creator;
     mapping(address => bool) black_list;
+
+    event Qualification (
+        uint256 account,
+        bool qualified,
+        uint256 block_number,
+        uint256 block_timestamp     
+    );
 
     modifier creatorOnly {
         require(msg.sender == creator, "Not Authorized");
@@ -84,25 +90,25 @@ contract QLF_LUCKYDRAW is IQLF {
     }
 
     function ifQualified(address account) public view override returns (bool qualified) {
-        if (IERC20(token_addr).balanceOf(account) < min_token_amount) {
-            return false;
-        }
-        qualified = true;
+        qualified = (IERC20(token_addr).balanceOf(account) >= min_token_amount);
     } 
 
     function logQualified(address account, uint256 ito_start_time) public override returns (bool qualified) {
-        require ((tx.gasprice <= max_gas_price), "Gas price too high");
+        require(tx.gasprice <= max_gas_price, "Gas price too high");
 
-        require((IERC20(token_addr).balanceOf(account) >= min_token_amount), "Not holding enough tokens");
+        require(IERC20(token_addr).balanceOf(account) >= min_token_amount, "Not holding enough tokens");
 
         if (start_time > block.timestamp || ito_start_time > block.timestamp) {
             black_list[account] = true;
-            require(false, "Not started.");
+            revert("Not started.");
         }
-        require(false == black_list[account], "Not Qualified");
-        require(isLucky(account), "Not lucky enough");
+        require(black_list[account] == false, "Blacklisted");
+        if (isLucky(account) == false) {
+            emit Qualification(account, false, block.number, block.timestamp);
+            revert("Not lucky enough");
+        }
         emit Qualification(account, true, block.number, block.timestamp);
-        return true;
+        qualified = true;
     } 
 
     function supportsInterface(bytes4 interfaceId) external override pure returns (bool) {
@@ -115,12 +121,11 @@ contract QLF_LUCKYDRAW is IQLF {
         if (lucky_factor == 0) {
             return true;
         }
-        bytes32 sha = keccak256(
-          abi.encodePacked(blockhash(block.number - 10), account, block.coinbase, block.difficulty)
-        );
-        if ((uint8(sha[0]) & 0x03) >= lucky_factor) {
-            return true;
-        }
-        return false;
+        uint256 blocknumber = block.number;
+        uint256 random_block = blocknumber - 1 - uint256(
+            keccak256(abi.encodePacked(blockhash(blocknumber-1), account))
+        ) % 255;
+        bytes32 sha = keccak256(abi.encodePacked(blockhash(random_block), account, block.coinbase, block.difficulty));
+        return ((uint8(sha[0]) & 0x03) >= lucky_factor);
     }
 }
