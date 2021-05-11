@@ -29,13 +29,6 @@ contract QLF_LUCKYDRAW is IQLF {
     address creator;
     mapping(address => bool) black_list;
 
-    event Qualification (
-        uint256 account,
-        bool qualified,
-        uint256 block_number,
-        uint256 block_timestamp     
-    );
-
     modifier creatorOnly {
         require(msg.sender == creator, "Not Authorized");
         _;
