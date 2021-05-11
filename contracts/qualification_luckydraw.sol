@@ -29,6 +29,9 @@ contract QLF_LUCKYDRAW is IQLF {
     address creator;
     mapping(address => bool) black_list;
 
+    event GasPriceOver ();
+    event Unlucky ();
+
     modifier creatorOnly {
         require(msg.sender == creator, "Not Authorized");
         _;
@@ -87,7 +90,10 @@ contract QLF_LUCKYDRAW is IQLF {
     } 
 
     function logQualified(address account, uint256 ito_start_time) public override returns (bool qualified) {
-        require(tx.gasprice <= max_gas_price, "Gas price too high");
+        if (tx.gasprice > max_gas_price) {
+            emit GasPriceOver();
+            revert("Gas price too high");
+        }
 
         require(IERC20(token_addr).balanceOf(account) >= min_token_amount, "Not holding enough tokens");
 
@@ -97,6 +103,7 @@ contract QLF_LUCKYDRAW is IQLF {
         }
         require(black_list[account] == false, "Blacklisted");
         if (isLucky(account) == false) {
+            emit Unlucky();
             emit Qualification(account, false, block.number, block.timestamp);
             revert("Not lucky enough");
         }
