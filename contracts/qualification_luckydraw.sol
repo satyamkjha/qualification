@@ -114,7 +114,8 @@ contract QLF_LUCKYDRAW is IQLF {
     function supportsInterface(bytes4 interfaceId) external override pure returns (bool) {
         return interfaceId == this.supportsInterface.selector || 
             interfaceId == (this.ifQualified.selector ^ this.logQualified.selector) ||
-            interfaceId == this.get_start_time.selector;
+            interfaceId == this.get_start_time.selector ||
+            interfaceId == this.isLucky.selector;
     }
 
     function isLucky(address account) public view returns (bool) {
