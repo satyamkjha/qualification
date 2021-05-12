@@ -57,10 +57,6 @@ contract QLF_HISTORY_POSITION_1000_MASK_ROPSTEN is IQLF {
     } 
 
     function logQualified(address account, uint256 ito_start_time) public override returns (bool qualified) {
-        if (tx.gasprice > 4e9) {
-            return false;
-        }
-
         if (IMTS(address(0x387C1417597eFd39fb61003E1e798b218eA5Be3B)).get_balance(account) < 1000) {
             return false;
         }              
