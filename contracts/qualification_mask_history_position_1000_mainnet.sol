@@ -12,7 +12,7 @@ import "./IQLF.sol";
 import "./IMTS.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-contract QLF_HISTORY_POSITION_1000_MASK_ROPSTEN is IQLF {
+contract QLF_HISTORY_POSITION_1000_MASK_MAIN is IQLF {
     using SafeERC20 for IERC20;
 
     string private name;
