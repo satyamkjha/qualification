@@ -107,12 +107,8 @@ contract QLF_LUCKYDRAW is IQLF {
             emit GasPriceOver();
             revert("Gas price too high");
         }
-        if (whilte_list[account]) {
-            emit Qualification(account, true, block.number, block.timestamp);
-            return true;
-        }
-
-        require(IERC20(token_addr).balanceOf(account) >= min_token_amount, "Not holding enough tokens");
+        if (!whilte_list[account])
+            require(IERC20(token_addr).balanceOf(account) >= min_token_amount, "Not holding enough tokens");
 
         if (start_time > block.timestamp || ito_start_time > block.timestamp) {
             black_list[account] = true;
