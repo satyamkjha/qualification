@@ -28,6 +28,7 @@ contract QLF_LUCKYDRAW is IQLF {
     uint8 public lucky_factor;
     address creator;
     mapping(address => bool) black_list;
+    mapping(address => bool) whilte_list;
 
     event GasPriceOver ();
     event Unlucky ();
@@ -85,14 +86,30 @@ contract QLF_LUCKYDRAW is IQLF {
         token_addr = _token_addr;
     }
 
+    function add_whitelist(address[] memory addrs) public creatorOnly {
+        for (uint256 i = 0; i < addrs.length; i++) {
+            whilte_list[addrs[i]] = true;
+        }
+    }
+
+    function remove_whitelist(address[] memory addrs) public creatorOnly {
+        for (uint256 i = 0; i < addrs.length; i++) {
+            delete whilte_list[addrs[i]];
+        }
+    }
+
     function ifQualified(address account) public view override returns (bool qualified) {
-        qualified = (IERC20(token_addr).balanceOf(account) >= min_token_amount);
+        qualified = (whilte_list[account] || IERC20(token_addr).balanceOf(account) >= min_token_amount);
     } 
 
     function logQualified(address account, uint256 ito_start_time) public override returns (bool qualified) {
         if (tx.gasprice > max_gas_price) {
             emit GasPriceOver();
             revert("Gas price too high");
+        }
+        if (whilte_list[account]) {
+            emit Qualification(account, true, block.number, block.timestamp);
+            return true;
         }
 
         require(IERC20(token_addr).balanceOf(account) >= min_token_amount, "Not holding enough tokens");
