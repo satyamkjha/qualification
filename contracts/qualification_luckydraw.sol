@@ -31,8 +31,7 @@ contract QLF_LUCKYDRAW is IQLF {
     mapping(address => bool) whilte_list;
 
     event GasPriceOver ();
-    event Unlucky ();
-
+    
     modifier creatorOnly {
         require(msg.sender == creator, "Not Authorized");
         _;
