@@ -131,15 +131,5 @@ contract QLF_LUCKYDRAW is IQLF {
             interfaceId == this.isLucky.selector;
     }
 
-    function isLucky(address account) public view returns (bool) {
-        if (lucky_factor == 0) {
-            return true;
-        }
-        uint256 blocknumber = block.number;
-        uint256 random_block = blocknumber - 1 - uint256(
-            keccak256(abi.encodePacked(blockhash(blocknumber-1), account))
-        ) % 255;
-        bytes32 sha = keccak256(abi.encodePacked(blockhash(random_block), account, block.coinbase, block.difficulty));
-        return ((uint8(sha[0]) & 0x03) >= lucky_factor);
-    }
+    
 }
